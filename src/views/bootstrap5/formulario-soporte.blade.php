@@ -15,6 +15,7 @@
 
                     <input type="hidden" name="name" value="{{ Auth::check() ? Auth::user()->name : '' }}" required>
                     <input type="hidden" name="lastname" value="{{ Auth::check() ? Auth::user()->lastname : '' }}" required>
+                    <input type="hidden" name="current_url" value="{{ url()->current() }}">
 
                     <div class="row">
                         <div class="col-md-6">
