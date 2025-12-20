@@ -4,7 +4,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="soporteModalLabel">Soporte Técnico</h5>
                 <a href="{{ route('soporte.index') }}" class="btn btn-link">
-                    Ver mis tickets <span class="badge bg-warning" style="font-size: 0.7em;">NUEVO</span>
+                    Ver mis tickets
                 </a>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
@@ -12,15 +12,6 @@
             <form method="POST" action="{{ route('soporte.store') }}" id="soporteForm" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body">
-                    <div class="alert alert-info" role="alert">
-                        <h4 class="alert-heading">ℹ️ ¡Formulario de soporte mejorado!</h4>
-                        <p>Hemos actualizado nuestro sistema de soporte con nuevas funcionalidades:</p>
-                        <ul>
-                            <li>📝 Editor de texto enriquecido</li>
-                            <li>📎 Adjuntar múltiples archivos</li>
-                            <li>📍 Seguimiento desde la plataforma</li>
-                        </ul>
-                    </div>
 
                     <input type="hidden" name="name" value="{{ Auth::check() ? Auth::user()->name : '' }}" required>
                     <input type="hidden" name="lastname" value="{{ Auth::check() ? Auth::user()->lastname : '' }}" required>
@@ -29,7 +20,7 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="email" class="form-label">✉️ Email</label>
-                                <input type="email" class="form-control form-control-sm" id="email" name="email"
+                                <input disabled type="email" class="form-control form-control-sm" id="email" name="email"
                                     value="{{ Auth::check() ? Auth::user()->email : '' }}"
                                     {{ Auth::check() ? 'readonly' : '' }} required>
                             </div>
@@ -38,7 +29,7 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="phone" class="form-label">📞 Teléfono</label>
-                                <input type="text" class="form-control form-control-sm" id="phone" name="phone"
+                                <input type="number" class="form-control form-control-sm" id="phone" name="phone"
                                     placeholder="Ingrese su teléfono" required>
                             </div>
                         </div>
