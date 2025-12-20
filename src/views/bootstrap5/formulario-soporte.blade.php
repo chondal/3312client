@@ -20,7 +20,7 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="email" class="form-label">✉️ Email</label>
-                                <input disabled type="email" class="form-control form-control-sm" id="email" name="email"
+                                <input readonly type="email" class="form-control form-control-sm" id="email" name="email"
                                     value="{{ Auth::check() ? Auth::user()->email : '' }}"
                                     {{ Auth::check() ? 'readonly' : '' }} required>
                             </div>
