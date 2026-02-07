@@ -11,13 +11,9 @@ class TicketController extends Controller
 {
     protected $ticketService;
 
-    public function __construct()
+    public function __construct(TicketService $ticketService)
     {
-        $this->ticketService = new TicketService(
-            config('3312client.url'),
-            config('3312client.identificador_unico'),
-            config('3312client.token')
-        );
+        $this->ticketService = $ticketService;
     }
 
     public function index()
