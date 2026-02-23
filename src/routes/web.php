@@ -3,7 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use Chondal\TicketSoporte\Controllers\TicketController;
 
-Route::middleware(['web', 'auth'])->prefix('soporte')->name('soporte.')->group(function () {
+$authMiddleware = config('3312client.auth_middleware', 'auth');
+
+Route::middleware(['web', $authMiddleware])->prefix('soporte')->name('soporte.')->group(function () {
     Route::get('/tickets/listado', [TicketController::class, 'index'])->name('index');
     Route::get('/ticket/{ticket}', [TicketController::class, 'show'])->name('show');
     Route::post('/crear', [TicketController::class, 'store'])->name('store');
