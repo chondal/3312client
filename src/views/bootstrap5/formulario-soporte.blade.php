@@ -13,8 +13,13 @@
                 @csrf
                 <div class="modal-body">
 
-                    <input type="hidden" name="name" value="{{ Auth::check() ? Auth::user()->name : '' }}" required>
-                    <input type="hidden" name="lastname" value="{{ Auth::check() ? Auth::user()->lastname : '' }}" required>
+                    @php
+                        $__soporteGuard = config('3312client.auth_guard');
+                        $__soporteUser = Auth::guard($__soporteGuard)->user();
+                        $__soporteFields = config('3312client.user_fields', []);
+                    @endphp
+                    <input type="hidden" name="name" value="{{ $__soporteUser?->{$__soporteFields['name'] ?? 'name'} ?? '' }}" required>
+                    <input type="hidden" name="lastname" value="{{ $__soporteUser?->{$__soporteFields['lastname'] ?? 'lastname'} ?? '' }}" required>
                     <input type="hidden" name="current_url" value="{{ url()->current() }}">
 
                     <div class="row">
@@ -22,8 +27,8 @@
                             <div class="mb-3">
                                 <label for="email" class="form-label">✉️ Email</label>
                                 <input readonly type="email" class="form-control form-control-sm" id="email" name="email"
-                                    value="{{ Auth::check() ? Auth::user()->email : '' }}"
-                                    {{ Auth::check() ? 'readonly' : '' }} required>
+                                    value="{{ $__soporteUser?->{$__soporteFields['email'] ?? 'email'} ?? '' }}"
+                                    {{ $__soporteUser ? 'readonly' : '' }} required>
                             </div>
                         </div>
 

@@ -397,16 +397,22 @@
                 </div>
             </div>
 
+            @php
+                $__soporteGuard = config('3312client.auth_guard');
+                $__soporteUser = Auth::guard($__soporteGuard)->user();
+                $__soporteFields = config('3312client.user_fields', []);
+                $__soporteUserName = $__soporteUser?->{$__soporteFields['name'] ?? 'name'} ?? 'Usuario';
+            @endphp
             <div class="d-flex align-items-center gap-3">
-                @auth
+                @if($__soporteUser)
                 <div class="dropdown">
                     <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                        <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name ?? 'Usuario') }}&background=435ebe&color=fff" 
-                             class="avatar shadow-sm" 
-                             alt="{{ auth()->user()->name ?? 'Usuario' }}">
+                        <img src="https://ui-avatars.com/api/?name={{ urlencode($__soporteUserName) }}&background=435ebe&color=fff"
+                             class="avatar shadow-sm"
+                             alt="{{ $__soporteUserName }}">
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg">
-                        <li><h6 class="dropdown-header">Hola, {{ auth()->user()->name ?? 'Usuario' }}</h6></li>
+                        <li><h6 class="dropdown-header">Hola, {{ $__soporteUserName }}</h6></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <form method="POST" action="{{ route('logout') }}">
@@ -418,7 +424,7 @@
                         </li>
                     </ul>
                 </div>
-                @endauth
+                @endif
             </div>
         </header>
 

@@ -20,16 +20,37 @@ class TicketController extends Controller
         );
     }
 
+    /**
+     * Obtiene el usuario autenticado usando el guard configurado.
+     */
+    protected function authUser()
+    {
+        $guard = config('3312client.auth_guard');
+
+        return Auth::guard($guard)->user();
+    }
+
+    /**
+     * Obtiene un campo del usuario autenticado usando el mapeo de campos configurado.
+     */
+    protected function userField(string $field): ?string
+    {
+        $user = $this->authUser();
+        $mappedField = config("3312client.user_fields.{$field}", $field);
+
+        return $user?->{$mappedField};
+    }
+
     public function index()
     {
-        $tickets = $this->ticketService->obtenerTickets(Auth::user()->email)->json();
+        $tickets = $this->ticketService->obtenerTickets($this->userField('email'))->json();
         $tiposTicket = $this->ticketService->obtenerTiposTicket()->json();
         return view($this->getView('index'), compact('tickets', 'tiposTicket'));
     }
 
     public function show($ticketId)
     {
-        $ticket = $this->ticketService->obtenerTicket(Auth::user()->email, $ticketId)->json();
+        $ticket = $this->ticketService->obtenerTicket($this->userField('email'), $ticketId)->json();
         return view($this->getView('show'), compact('ticket'));
     }
 
@@ -72,7 +93,7 @@ class TicketController extends Controller
         ]);
 
         $archivos = $request->file('archivos', []);
-        $response = $this->ticketService->responderTicket(Auth::user()->email, $ticketId, $request->respuesta, $archivos);
+        $response = $this->ticketService->responderTicket($this->userField('email'), $ticketId, $request->respuesta, $archivos);
 
         if ($response->successful()) {
             flash('Respuesta enviada exitosamente')->success();
@@ -84,7 +105,7 @@ class TicketController extends Controller
 
     public function cerrar($ticketId)
     {
-        $response = $this->ticketService->cerrarTicket(Auth::user()->email, $ticketId);
+        $response = $this->ticketService->cerrarTicket($this->userField('email'), $ticketId);
 
         if ($response->successful()) {
             flash('Ticket cerrado exitosamente')->success();
