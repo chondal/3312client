@@ -27,64 +27,40 @@
 <!-- Cards de Estadísticas -->
 <div class="row g-3 mb-4">
     <div class="col-6 col-xl-3">
-        <div class="card stat-card p-3">
-            <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <p class="text-muted mb-1 small fw-bold text-uppercase">Totales</p>
-                    <h3 class="fw-bold mb-0">{{ $totalTickets }}</h3>
-                </div>
-                <div class="stat-icon bg-primary bg-opacity-10 text-primary">
-                    <i class="bi bi-layers-fill"></i>
-                </div>
-            </div>
+        <div class="stat-card h-100">
+            <div class="stat-label"><span class="stat-dot" style="background:#6B6B78"></span>Totales</div>
+            <div class="stat-value">{{ $totalTickets }}</div>
+            <div class="stat-hint">Tickets en total</div>
         </div>
     </div>
     <div class="col-6 col-xl-3">
-        <div class="card stat-card p-3">
-            <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <p class="text-muted mb-1 small fw-bold text-uppercase">Pendientes</p>
-                    <h3 class="fw-bold mb-0">{{ $pendientes }}</h3>
-                </div>
-                <div class="stat-icon bg-warning bg-opacity-10 text-warning">
-                    <i class="bi bi-hourglass-split"></i>
-                </div>
-            </div>
+        <div class="stat-card h-100">
+            <div class="stat-label"><span class="stat-dot" style="background:#C77D0A"></span>Pendientes</div>
+            <div class="stat-value">{{ $pendientes }}</div>
+            <div class="stat-hint">Requieren atención</div>
         </div>
     </div>
     <div class="col-6 col-xl-3">
-        <div class="card stat-card p-3">
-            <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <p class="text-muted mb-1 small fw-bold text-uppercase">Resueltos</p>
-                    <h3 class="fw-bold mb-0">{{ $resueltos }}</h3>
-                </div>
-                <div class="stat-icon bg-success bg-opacity-10 text-success">
-                    <i class="bi bi-check-circle-fill"></i>
-                </div>
-            </div>
+        <div class="stat-card h-100">
+            <div class="stat-label"><span class="stat-dot" style="background:#1F8A5B"></span>Resueltos</div>
+            <div class="stat-value">{{ $resueltos }}</div>
+            <div class="stat-hint">Cerrados o resueltos</div>
         </div>
     </div>
     <div class="col-6 col-xl-3">
-        <div class="card stat-card p-3">
-            <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <p class="text-muted mb-1 small fw-bold text-uppercase">Críticos</p>
-                    <h3 class="fw-bold mb-0">{{ $criticos }}</h3>
-                </div>
-                <div class="stat-icon bg-danger bg-opacity-10 text-danger">
-                    <i class="bi bi-exclamation-triangle-fill"></i>
-                </div>
-            </div>
+        <div class="stat-card h-100">
+            <div class="stat-label"><span class="stat-dot" style="background:#B1005F"></span>Críticos</div>
+            <div class="stat-value">{{ $criticos }}</div>
+            <div class="stat-hint">Prioridad alta o urgente</div>
         </div>
     </div>
 </div>
 
 <!-- Card Principal con Tabla -->
-<div class="card">
-    <div class="card-header bg-white border-0 py-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
+<div class="card overflow-hidden">
+    <div class="card-header bg-white border-0 py-3 d-flex flex-wrap justify-content-between align-items-center gap-3" style="border-bottom:1px solid var(--border-softer) !important;">
         <div class="d-flex align-items-center gap-2">
-            <h5 class="mb-0 fw-bold">Lista de Tickets</h5>
+            <h5 class="mb-0 fw-bold font-display">Lista de Tickets</h5>
         </div>
         <div class="d-flex gap-2">
             <button class="btn btn-primary btn-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#soporteModal">
@@ -93,12 +69,12 @@
             </button>
         </div>
     </div>
-    
+
     <div class="table-responsive">
         <table class="table table-hover table-custom mb-0">
             <thead>
                 <tr>
-                    <th width="80">#ID</th>
+                    <th width="90">ID</th>
                     <th>Asunto</th>
                     <th>Prioridad</th>
                     <th>Estado</th>
@@ -108,52 +84,28 @@
             </thead>
             <tbody>
                 @forelse($ticketsData as $ticket)
-                    <tr class="ticket-row">
-                        <td class="fw-bold text-primary">#{{ $ticket['id'] }}</td>
+                    <tr class="ticket-row" onclick="window.location='{{ route('soporte.show', $ticket['id']) }}'">
+                        <td class="ticket-id">TK-{{ $ticket['id'] }}</td>
                         <td>
-                            <div class="fw-bold">{{ $ticket['titulo'] ?? 'Sin título' }}</div>
+                            <div class="fw-semibold">{{ $ticket['titulo'] ?? 'Sin título' }}</div>
                             @if(isset($ticket['mensaje']) && strlen($ticket['mensaje']) > 0)
-                                <div class="small text-muted text-truncate" style="max-width: 300px;">
+                                <div class="small text-truncate" style="max-width: 320px; color: var(--text-faint);">
                                     {{ Str::limit(strip_tags($ticket['mensaje']), 60) }}
                                 </div>
                             @endif
                         </td>
                         <td>
-                            @php
-                                $prioridadTexto = strtolower($ticket['prioridad']['texto'] ?? 'media');
-                                $prioridadColor = 'primary';
-                                if (in_array($prioridadTexto, ['urgente', 'crítica', 'alta'])) {
-                                    $prioridadColor = 'danger';
-                                } elseif (in_array($prioridadTexto, ['media', 'normal'])) {
-                                    $prioridadColor = 'warning';
-                                } elseif (in_array($prioridadTexto, ['baja', 'bajo'])) {
-                                    $prioridadColor = 'success';
-                                }
-                            @endphp
-                            <span class="priority-dot bg-{{ $prioridadColor }}"></span>
-                            <span class="small">{{ $ticket['prioridad']['texto'] ?? 'Media' }}</span>
+                            @include('3312client::components._pill', ['texto' => $ticket['prioridad']['texto'] ?? 'Media', 'kind' => 'prioridad'])
                         </td>
                         <td>
-                            @php
-                                $estadoTexto = strtolower($ticket['estado']['texto'] ?? 'abierto');
-                                $badgeClass = 'badge-soft-primary';
-                                if (in_array($estadoTexto, ['cerrado', 'resuelto', 'completado'])) {
-                                    $badgeClass = 'badge-soft-success';
-                                } elseif (in_array($estadoTexto, ['en proceso', 'pendiente', 'asignado'])) {
-                                    $badgeClass = 'badge-soft-warning';
-                                } elseif (in_array($estadoTexto, ['crítico', 'urgente'])) {
-                                    $badgeClass = 'badge-soft-danger';
-                                }
-                            @endphp
-                            <span class="badge {{ $badgeClass }} rounded-pill px-3">
-                                {{ $ticket['estado']['texto'] ?? 'Abierto' }}
-                            </span>
+                            @include('3312client::components._pill', ['texto' => $ticket['estado']['texto'] ?? 'Abierto', 'kind' => 'estado'])
                         </td>
-                        <td class="text-muted small">
+                        <td class="small" style="color: var(--text-muted);">
                             {{ \Carbon\Carbon::parse($ticket['created_at'] ?? now())->format('d/m/Y H:i') }}
                         </td>
                         <td class="text-end">
-                            <a href="{{ route('soporte.show', $ticket['id']) }}" 
+                            <a href="{{ route('soporte.show', $ticket['id']) }}"
+                               onclick="event.stopPropagation()"
                                class="btn btn-sm btn-light border d-inline-flex align-items-center gap-1">
                                 <i class="bi bi-eye"></i>
                                 <span class="d-none d-md-inline">Ver</span>
@@ -164,12 +116,12 @@
                     <tr>
                         <td colspan="6" class="text-center py-5">
                             <div class="d-flex flex-column align-items-center gap-3">
-                                <div class="bg-light rounded-circle p-4">
-                                    <i class="bi bi-inbox fs-1 text-muted"></i>
+                                <div class="rounded-circle p-4" style="background: var(--brand-tint);">
+                                    <i class="bi bi-inbox fs-1" style="color: var(--primary-color);"></i>
                                 </div>
                                 <div>
-                                    <h6 class="text-muted mb-1">No hay tickets registrados</h6>
-                                    <p class="text-muted small mb-0">Crea tu primer ticket para comenzar</p>
+                                    <h6 class="mb-1" style="color: var(--text-main);">No hay tickets registrados</h6>
+                                    <p class="small mb-0" style="color: var(--text-muted);">Crea tu primer ticket para comenzar</p>
                                 </div>
                                 <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#soporteModal">
                                     <i class="bi bi-plus-lg me-1"></i> Crear Ticket
@@ -217,37 +169,5 @@
 
 <!-- Componente de Formulario de Soporte -->
 <x-formulario-soporte />
-
-@push('styles')
-<style>
-    /* Estilos adicionales para la vista de tickets */
-    .ticket-row {
-        transition: all 0.2s ease;
-    }
-    
-    .ticket-row:hover {
-        background-color: #fafbfc;
-        cursor: pointer;
-    }
-    
-    .stat-card {
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    
-    .stat-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
-    }
-    
-    .priority-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        display: inline-block;
-        margin-right: 6px;
-        vertical-align: middle;
-    }
-</style>
-@endpush
 
 @endsection
