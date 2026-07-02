@@ -20,7 +20,9 @@ class FormularioSoporte extends Component
 
     public function render()
     {
-        return view('3312client::bootstrap5.formulario-soporte', [
+        $version = config('3312client.bootstrap', 5);
+
+        return view("3312client::bootstrap{$version}.formulario-soporte", [
             'tiposTicket' => $this->tiposTicket
         ]);
     }

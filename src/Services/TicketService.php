@@ -20,6 +20,28 @@ class TicketService
         $this->token = $token;
     }
 
+    protected function send(callable $callback, string $context): Response
+    {
+        try {
+            $response = $callback();
+
+            if ($response->failed()) {
+                Log::error("TicketService {$context} failed", [
+                    'status' => $response->status(),
+                    'body' => $response->body(),
+                ]);
+            }
+
+            return $response;
+        } catch (\Throwable $e) {
+            Log::error("TicketService {$context} exception", [
+                'error' => $e->getMessage(),
+            ]);
+
+            return Http::response(['message' => 'Service unavailable'], 500);
+        }
+    }
+
     public function crearTicket(array $datos, array $archivos = []): Response
     {
         $multipart = [];
@@ -45,9 +67,11 @@ class TicketService
             }
         }
 
-        return Http::withToken($this->token)
-            ->asMultipart()
-            ->post("{$this->baseUrl}/api/tickets", $multipart);
+        return $this->send(function () use ($multipart) {
+            return Http::withToken($this->token)
+                ->asMultipart()
+                ->post("{$this->baseUrl}/api/tickets", $multipart);
+        }, 'crearTicket');
     }
 
     public function responderTicket(string $email, int $ticketId, string $mensaje, array $archivos = []): Response
@@ -81,42 +105,52 @@ class TicketService
             }
         }
 
-        return Http::withToken($this->token)
-            ->asMultipart()
-            ->post("{$this->baseUrl}/api/tickets/{$ticketId}/responder", $multipart);
+        return $this->send(function () use ($ticketId, $multipart) {
+            return Http::withToken($this->token)
+                ->asMultipart()
+                ->post("{$this->baseUrl}/api/tickets/{$ticketId}/responder", $multipart);
+        }, 'responderTicket');
     }
 
     public function obtenerTickets(string $email, ?int $perPage = 10): Response
     {
-        return Http::withToken($this->token)
-            ->get("{$this->baseUrl}/api/tickets", [
-                'email' => $email,
-                'identificador_unico' => $this->identificadorUnico,
-                'per_page' => $perPage
-            ]);
+        return $this->send(function () use ($email, $perPage) {
+            return Http::withToken($this->token)
+                ->get("{$this->baseUrl}/api/tickets", [
+                    'email' => $email,
+                    'identificador_unico' => $this->identificadorUnico,
+                    'per_page' => $perPage
+                ]);
+        }, 'obtenerTickets');
     }
 
     public function obtenerTicket(string $email, int $ticketId): Response
     {
-        return Http::withToken($this->token)
-            ->get("{$this->baseUrl}/api/tickets/{$ticketId}", [
-                'email' => $email,
-                'identificador_unico' => $this->identificadorUnico
-            ]);
+        return $this->send(function () use ($email, $ticketId) {
+            return Http::withToken($this->token)
+                ->get("{$this->baseUrl}/api/tickets/{$ticketId}", [
+                    'email' => $email,
+                    'identificador_unico' => $this->identificadorUnico
+                ]);
+        }, 'obtenerTicket');
     }
 
     public function cerrarTicket(string $email, int $ticketId): Response
     {
-        return Http::withToken($this->token)
-            ->get("{$this->baseUrl}/api/cerrar-ticket/{$ticketId}", [
-                'email' => $email,
-                'identificador_unico' => $this->identificadorUnico
-            ]);
+        return $this->send(function () use ($email, $ticketId) {
+            return Http::withToken($this->token)
+                ->get("{$this->baseUrl}/api/cerrar-ticket/{$ticketId}", [
+                    'email' => $email,
+                    'identificador_unico' => $this->identificadorUnico
+                ]);
+        }, 'cerrarTicket');
     }
 
     public function obtenerTiposTicket(): Response
     {
-        return Http::withToken($this->token)
-            ->get("{$this->baseUrl}/api/tipos-ticket");
+        return $this->send(function () {
+            return Http::withToken($this->token)
+                ->get("{$this->baseUrl}/api/tipos-ticket");
+        }, 'obtenerTiposTicket');
     }
 }
